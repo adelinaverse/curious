@@ -58,7 +58,7 @@ function RealOrMyth({ onExit, onScore }: { onExit: () => void; onScore: (r: numb
       <section className="play">
         <h1 className="play-title">{score} out of {deck.length}</h1>
         <p className="play-sub">{score >= 5 ? 'Hard to fool.' : score >= 3 ? 'Some of those are sneaky.' : 'Now you know. That is the whole point.'}</p>
-        <button className="btn btn-gold wide" onClick={onExit}>Back to games</button>
+        <button className="btn btn-dark wide" onClick={onExit}>Back to games</button>
       </section>
     );
   }
@@ -79,13 +79,13 @@ function RealOrMyth({ onExit, onScore }: { onExit: () => void; onScore: (r: numb
       {said === null ? (
         <div className="rom-actions">
           <button className="btn btn-line" onClick={() => answer(false)}>Myth</button>
-          <button className="btn btn-gold" onClick={() => answer(true)}>Real</button>
+          <button className="btn btn-dark" onClick={() => answer(true)}>Real</button>
         </div>
       ) : (
         <>
           <p className="quiz-why"><strong>{item.real ? 'Real.' : 'Myth.'}</strong> {item.why}</p>
           <button
-            className="btn btn-gold wide"
+            className="btn btn-dark wide"
             onClick={() => {
               if (i === deck.length - 1) onScore(score, deck.length);
               setI(i + 1);

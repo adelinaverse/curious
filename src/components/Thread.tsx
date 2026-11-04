@@ -60,9 +60,9 @@ export function Thread({ card, waitlist, onClose, onLearned, onQuizzed, onWaitli
           <div className="thread-nav">
             <button className="btn btn-ghost" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Back</button>
             {page < pages.length - 1 ? (
-              <button className="btn btn-gold" onClick={() => setPage(p => p + 1)}>Next</button>
+              <button className="btn btn-dark" onClick={() => setPage(p => p + 1)}>Next</button>
             ) : (
-              <button className="btn btn-gold" onClick={() => setMode('choose')}>Keep going</button>
+              <button className="btn btn-dark" onClick={() => setMode('choose')}>Keep going</button>
             )}
           </div>
         </div>
@@ -115,7 +115,7 @@ export function Thread({ card, waitlist, onClose, onLearned, onQuizzed, onWaitli
               <a key={s.url} href={s.url} target="_blank" rel="noreferrer">{s.label}</a>
             ))}
           </div>
-          <button className="btn btn-gold" onClick={onClose}>Back to my feed</button>
+          <button className="btn btn-dark" onClick={onClose}>Back to my feed</button>
         </div>
       )}
     </div>
@@ -158,10 +158,10 @@ function Learn({ card, onDone, onQuiz }: { card: Card; onDone: (n: number) => vo
         {finished ? (
           <>
             <button className="btn btn-ghost" onClick={() => onDone(card.learn.length)}>I'm done</button>
-            <button className="btn btn-gold" onClick={() => { onDone(card.learn.length); onQuiz(); }}>Test myself</button>
+            <button className="btn btn-dark" onClick={() => { onDone(card.learn.length); onQuiz(); }}>Test myself</button>
           </>
         ) : (
-          <button className="btn btn-gold wide" onClick={() => setShown(n => n + 1)}>Next step</button>
+          <button className="btn btn-dark wide" onClick={() => setShown(n => n + 1)}>Next step</button>
         )}
       </div>
     </div>
@@ -201,7 +201,7 @@ export function Quiz({ questions, onDone }: { questions: QuizQuestion[]; onDone:
             <strong>{pick === q.answer ? 'Right.' : 'Not quite.'}</strong> {q.why}
           </p>
           <button
-            className="btn btn-gold wide"
+            className="btn btn-dark wide"
             onClick={() => {
               if (last) onDone(right, questions.length);
               else { setI(i + 1); setPick(null); }

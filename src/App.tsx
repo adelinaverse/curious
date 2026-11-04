@@ -86,7 +86,7 @@ export default function App() {
         )}
       </main>
 
-      <nav className="tabs" aria-label="Main">
+      <nav className={`tabs ${tab === 'feed' && !sessionOver ? 'is-dark' : ''}`} aria-label="Main">
         {([['feed', 'Feed'], ['play', 'Play'], ['you', 'You']] as const).map(([id, label]) => (
           <button key={id} className={tab === id ? 'is-on' : ''} onClick={() => setTab(id)} aria-current={tab === id}>
             <Icon name={id} />
@@ -138,12 +138,12 @@ export default function App() {
 function SessionEnd({ p, outOfCards, onMore, onPlay }: { p: ReturnType<typeof useProgress>['p']; outOfCards: boolean; onMore: () => void; onPlay: () => void }) {
   return (
     <section className="end">
-      <Wordmark size="sm" />
+      <div className="end-art" aria-hidden />
       {outOfCards ? (
         <>
           <h1 className="end-title">You've seen every card for now.</h1>
           <p className="end-sub">New cards land regularly. Until then, your rabbit holes and games are waiting.</p>
-          <button className="btn btn-gold wide" onClick={onPlay}>Play a game</button>
+          <button className="btn btn-dark wide" onClick={onPlay}>Play a game</button>
         </>
       ) : (
         <>
@@ -152,7 +152,7 @@ function SessionEnd({ p, outOfCards, onMore, onPlay }: { p: ReturnType<typeof us
             You've explored {p.seen.length} {p.seen.length === 1 ? 'card' : 'cards'} and opened {p.holes.length} {p.holes.length === 1 ? 'rabbit hole' : 'rabbit holes'}.
             Come back tomorrow and your feed will have shifted with you.
           </p>
-          <button className="btn btn-gold wide" onClick={onPlay}>Test what stuck</button>
+          <button className="btn btn-dark wide" onClick={onPlay}>Test what stuck</button>
           <button className="btn btn-ghost wide" onClick={onMore}>Keep going a little longer</button>
         </>
       )}
@@ -165,8 +165,8 @@ function Shell({ children }: { children: ReactNode }) {
     <div className="stage">
       <aside className="stage-note">
         <Wordmark size="md" />
-        <p>A feed you steer. Bite-size wonder about history, nature, space and the unexplained, where every card tells you how sure we are.</p>
-        <p className="stage-small">A Modish experiment. Best on your phone.</p>
+        <p>A feed you steer. Short, surprising cards about history, nature, space and the unexplained. Every card tells you how sure we are.</p>
+        <p className="stage-small">A Modish experiment. Open it on your phone for the full feel.</p>
       </aside>
       <div className="device">{children}</div>
     </div>

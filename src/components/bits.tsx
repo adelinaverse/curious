@@ -14,36 +14,41 @@ function seeded(seed: string) {
   };
 }
 
-// Generative "star chart / dig site" art, unique per card, coloured by theme.
+// Soft mesh-gradient art with film grain, unique per card, coloured by theme.
+export function meshColours(seed: string, hue: number) {
+  const r = seeded(seed);
+  return {
+    base: `hsl(${hue} 70% 14%)`,
+    blobs: [
+      { x: r(), y: r() * 0.6, c: `hsl(${hue} 85% 58%)` },
+      { x: r(), y: 0.3 + r() * 0.5, c: `hsl(${(hue + 40) % 360} 80% 52%)` },
+      { x: r(), y: 0.5 + r() * 0.5, c: `hsl(${(hue + 330) % 360} 75% 40%)` },
+      { x: r(), y: r(), c: `hsl(${(hue + 15) % 360} 95% 78%)` },
+    ],
+  };
+}
+
 export function Art({ card, className = '' }: { card: Card; className?: string }) {
   if (card.image) return <img className={`art ${className}`} src={card.image} alt="" />;
-  const hue = themeOf(card.theme).hue;
-  const r = seeded(card.id);
-  const cx = 80 + r() * 240;
-  const cy = 60 + r() * 120;
-  const rings = Array.from({ length: 5 + Math.floor(r() * 4) }, (_, i) => 18 + i * (22 + r() * 14));
-  const rays = Array.from({ length: 10 + Math.floor(r() * 14) }, () => r() * Math.PI * 2);
-  const stars = Array.from({ length: 40 }, () => [r() * 400, r() * 240, r() * 1.6 + 0.4]);
+  const { base, blobs } = meshColours(card.id, themeOf(card.theme).hue);
+  const id = `m-${card.id}`;
   return (
-    <svg className={`art ${className}`} viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" aria-hidden>
-      <rect width="400" height="240" fill={`hsl(${hue} 55% 22%)`} />
-      <radialGradient id={`g-${card.id}`} cx={cx / 400} cy={cy / 240} r="0.7">
-        <stop offset="0" stopColor={`hsl(${hue} 70% 55%)`} stopOpacity="0.55" />
-        <stop offset="1" stopColor={`hsl(${hue} 60% 20%)`} stopOpacity="0" />
-      </radialGradient>
-      <rect width="400" height="240" fill={`url(#g-${card.id})`} />
-      {stars.map(([x, y, s], i) => (
-        <circle key={i} cx={x} cy={y} r={s} fill={`hsl(${hue} 80% 88%)`} opacity={0.35 + (i % 3) * 0.2} />
-      ))}
-      <g fill="none" stroke={`hsl(${hue} 85% 82%)`} strokeWidth="1">
-        {rings.map((rad, i) => (
-          <circle key={i} cx={cx} cy={cy} r={rad} opacity={0.55 - i * 0.05} strokeDasharray={i % 2 ? '2 5' : undefined} />
+    <svg className={`art ${className}`} viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" aria-hidden>
+      <defs>
+        {blobs.map((b, i) => (
+          <radialGradient key={i} id={`${id}-${i}`} cx={b.x} cy={b.y} r={i === 3 ? 0.28 : 0.62}>
+            <stop offset="0" stopColor={b.c} stopOpacity={i === 3 ? 0.9 : 1} />
+            <stop offset="1" stopColor={b.c} stopOpacity="0" />
+          </radialGradient>
         ))}
-        {rays.map((a, i) => (
-          <line key={i} x1={cx} y1={cy} x2={cx + Math.cos(a) * 420} y2={cy + Math.sin(a) * 420} opacity="0.14" />
-        ))}
-      </g>
-      <circle cx={cx} cy={cy} r="5" fill="#F2C14E" />
+        <filter id={`${id}-grain`}>
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+          <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.09 0" />
+        </filter>
+      </defs>
+      <rect width="400" height="700" fill={base} />
+      {blobs.map((_, i) => <rect key={i} width="400" height="700" fill={`url(#${id}-${i})`} />)}
+      <rect width="400" height="700" filter={`url(#${id}-grain)`} />
     </svg>
   );
 }
@@ -60,7 +65,7 @@ export function TruthTag({ truth, onClick }: { truth: Truth; onClick?: () => voi
 export function Wordmark({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   return (
     <span className={`wordmark wordmark-${size}`} aria-label="CurioUS">
-      Curio<span className="wordmark-us">US</span>
+      curio<span className="wordmark-us">US</span>
     </span>
   );
 }

@@ -1,52 +1,50 @@
 import { useEffect, useRef, useState } from 'react';
 import { truthLabels, type Card } from '../content';
-import { themeOf } from './bits';
+import { meshColours, themeOf } from './bits';
 
 const W = 1080, H = 1350;
 
 // Draws a watermarked share image of a card.
 function draw(canvas: HTMLCanvasElement, card: Card) {
   const ctx = canvas.getContext('2d')!;
-  const hue = themeOf(card.theme).hue;
+  const { base, blobs } = meshColours(card.id, themeOf(card.theme).hue);
   canvas.width = W;
   canvas.height = H;
-  ctx.fillStyle = '#1E2A78';
+  ctx.fillStyle = base;
   ctx.fillRect(0, 0, W, H);
-  const g = ctx.createRadialGradient(780, 300, 20, 780, 300, 900);
-  g.addColorStop(0, `hsla(${hue}, 70%, 55%, 0.55)`);
-  g.addColorStop(1, 'hsla(230, 60%, 20%, 0)');
-  ctx.fillStyle = g;
+  blobs.forEach((b, i) => {
+    const x = b.x * W, y = b.y * H, r = (i === 3 ? 0.3 : 0.7) * H;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, b.c);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+  });
+  const shade = ctx.createLinearGradient(0, H * 0.35, 0, H);
+  shade.addColorStop(0, 'rgba(0,0,0,0)');
+  shade.addColorStop(1, 'rgba(0,0,0,0.75)');
+  ctx.fillStyle = shade;
   ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = `hsla(${hue}, 85%, 82%, 0.35)`;
-  for (let r = 60; r < 700; r += 70) {
-    ctx.beginPath();
-    ctx.arc(780, 300, r, 0, Math.PI * 2);
-    ctx.stroke();
-  }
-  ctx.fillStyle = '#F2C14E';
-  ctx.beginPath();
-  ctx.arc(780, 300, 12, 0, Math.PI * 2);
-  ctx.fill();
 
-  ctx.fillStyle = '#A9B0E0';
-  ctx.font = '500 34px Figtree, sans-serif';
-  ctx.fillText(`${themeOf(card.theme).name}  /  ${truthLabels[card.truth].name}`, 90, 640);
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.font = '600 32px "Schibsted Grotesk", sans-serif';
+  ctx.fillText(`${themeOf(card.theme).name}    ${truthLabels[card.truth].name}`, 90, 150);
 
-  ctx.fillStyle = '#F5F3FF';
-  ctx.font = '76px Gloock, Georgia, serif';
+  ctx.fillStyle = '#fff';
+  ctx.font = '700 78px "Schibsted Grotesk", sans-serif';
   const lines = wrap(ctx, card.hook, W - 180);
-  lines.forEach((l, i) => ctx.fillText(l, 90, 740 + i * 92));
+  const top = H - 220 - lines.length * 88;
+  lines.forEach((l, i) => ctx.fillText(l, 90, top + i * 88));
 
-  ctx.fillStyle = '#F5F3FF';
-  ctx.font = '60px Gloock, Georgia, serif';
-  ctx.fillText('Curio', 90, H - 100);
-  const w = ctx.measureText('Curio').width;
-  ctx.fillStyle = '#F2C14E';
-  ctx.fillText('US', 90 + w, H - 100);
-  ctx.fillStyle = '#A9B0E0';
-  ctx.font = '500 30px Figtree, sans-serif';
+  ctx.font = '500 44px "Schibsted Grotesk", sans-serif';
+  ctx.fillText('curio', 90, H - 96);
+  const w = ctx.measureText('curio').width;
+  ctx.font = '800 44px "Schibsted Grotesk", sans-serif';
+  ctx.fillText('US', 90 + w, H - 96);
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = '500 30px "Schibsted Grotesk", sans-serif';
   ctx.textAlign = 'right';
-  ctx.fillText('A feed you steer', W - 90, H - 108);
+  ctx.fillText('The feed you steer', W - 90, H - 100);
   ctx.textAlign = 'left';
 }
 
@@ -97,7 +95,7 @@ export function Share({ card }: { card: Card }) {
     <div className="share">
       <h2 className="sheet-title">Share this card</h2>
       <canvas ref={ref} className="share-canvas" aria-label="Preview of the share image" />
-      <button className="btn btn-gold wide" disabled={!url} onClick={share}>Share image</button>
+      <button className="btn btn-dark wide" disabled={!url} onClick={share}>Share image</button>
       {status && <p className="note center">{status}</p>}
     </div>
   );
