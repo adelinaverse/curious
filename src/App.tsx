@@ -16,7 +16,12 @@ export default function App() {
   const store = useProgress();
   const { p } = store;
   const [tab, setTab] = useState<Tab>('feed');
-  const [overlay, setOverlay] = useState<Overlay>(null);
+  // Links like /?card=gobekli-tepe (from card pages and shares) open that card straight away.
+  const [linked] = useState(() => {
+    const id = new URLSearchParams(window.location.search).get('card');
+    return id && cards.some(c => c.id === id) ? id : null;
+  });
+  const [overlay, setOverlay] = useState<Overlay>(() => (linked && p.onboarded ? { kind: 'thread', id: linked } : null));
   const [current, setCurrent] = useState<Card | null>(null);
   const [upNext, setUpNext] = useState<Card | null>(null);
   const [sessionCount, setSessionCount] = useState(0);
@@ -41,7 +46,12 @@ export default function App() {
   if (!p.onboarded) {
     return (
       <Shell>
-        <Onboarding onStart={store.start} />
+        <Onboarding
+          onStart={picked => {
+            store.start(picked);
+            if (linked) setOverlay({ kind: 'thread', id: linked });
+          }}
+        />
       </Shell>
     );
   }
