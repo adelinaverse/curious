@@ -44,7 +44,7 @@ function draw(canvas: HTMLCanvasElement, card: Card) {
   ctx.fillStyle = 'rgba(255,255,255,0.7)';
   ctx.font = '500 30px "Schibsted Grotesk", sans-serif';
   ctx.textAlign = 'right';
-  ctx.fillText('The feed you steer', W - 90, H - 100);
+  ctx.fillText('swipecurious.com', W - 90, H - 100);
   ctx.textAlign = 'left';
 }
 
@@ -78,7 +78,7 @@ export function Share({ card }: { card: Card }) {
       const blob = await (await fetch(url)).blob();
       const file = new File([blob], `curious-${card.id}.png`, { type: 'image/png' });
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], text: card.hook });
+        await navigator.share({ files: [file], text: `${card.hook} Found on swipecurious.com`, url: 'https://www.swipecurious.com' });
         return;
       }
     } catch {
