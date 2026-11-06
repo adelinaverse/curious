@@ -46,17 +46,4 @@ export const cards: Card[] = [
   ...sacred,
 ];
 
-export const realOrMyth: { text: string; real: boolean; why: string }[] = [
-  { text: 'Vikings wore horned helmets into battle.', real: false, why: 'No horned Viking battle helmet has ever been found. The look comes from 1800s opera costumes.' },
-  { text: 'Honey found in Egyptian tombs was still edible.', real: true, why: 'Honey is so low in water and so acidic that it can last for thousands of years.' },
-  { text: 'Goldfish have a three-second memory.', real: false, why: 'Goldfish can be trained and remember things for months.' },
-  { text: 'There are more trees on Earth than stars in the Milky Way.', real: true, why: 'Earth has about 3 trillion trees. The Milky Way has roughly 100 to 400 billion stars.' },
-  { text: 'The Great Wall of China is visible from the Moon.', real: false, why: 'It is far too narrow. Astronauts say it is hard to spot even from low orbit.' },
-  { text: 'Oxford University is older than the Aztec Empire.', real: true, why: 'Teaching at Oxford began by 1096. Tenochtitlan was founded in 1325.' },
-  { text: 'Bananas are berries but strawberries are not.', real: true, why: 'Botanically, a berry grows from one flower with one ovary. Bananas fit, strawberries do not.' },
-  { text: 'Humans only use 10% of their brains.', real: false, why: 'Brain scans show activity across the whole brain, even during sleep.' },
-  { text: 'A US Army officer wrote a report on out-of-body travel.', real: true, why: 'The 1983 Gateway Process assessment is now public.' },
-  { text: 'Sound can arrange sand into geometric patterns.', real: true, why: 'Chladni showed this with a violin bow in 1787.' },
-  { text: 'The Parthenon was designed using the golden ratio.', real: false, why: 'There is no good evidence its builders used it. The claim relies on convenient measurements.' },
-  { text: 'Lightning never strikes the same place twice.', real: false, why: 'The Empire State Building is struck around 20 to 25 times a year.' },
-];
+export { realOrMyth } from './games/realOrMyth';

@@ -4,7 +4,7 @@ A feed you steer. Bite-size wonder about history, nature, space and the unexplai
 
 ## Edit the content
 
-Cards live in `src/cards`, one file per theme (for example `src/cards/sacred.ts`). To add a card, copy an existing one in that file and change the words. Themes, truth labels and Real or Myth statements live in `src/content.ts`. Paste an image URL into a card's `image` field to replace the gradient art. Starter source links are overview pages; swap in primary sources as you check each card.
+Cards live in `src/cards`, one file per theme (for example `src/cards/sacred.ts`). To add a card, copy an existing one in that file and change the words. Themes and truth labels live in `src/content.ts`. Real or Myth statements live in `src/games/realOrMyth.ts`. Paste an image URL into a card's `image` field to replace the gradient art. Starter source links are overview pages; swap in primary sources as you check each card.
 
 ## Run it locally
 
