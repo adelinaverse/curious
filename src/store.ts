@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { cards, themes, type Card, type ThemeId } from './content';
+import { setThemes, track } from './lib/analytics';
 
 // How much each action nudges a theme. This is "the algorithm".
 export const NUDGE = { keep: 0.3, skip: -0.15, deeper: 0.5, play: 0.2, learn: 0.2 };
@@ -63,6 +64,7 @@ function save(p: Progress) {
 export function useProgress() {
   const [p, setP] = useState<Progress>(load);
   useEffect(() => save(p), [p]);
+  useEffect(() => setThemes(p.picked), [p.picked]);
 
   // Count a day of use towards the streak, once per day.
   useEffect(() => {
@@ -80,6 +82,8 @@ export function useProgress() {
     p,
     set: setP,
     start(picked: ThemeId[]) {
+      setThemes(picked);
+      track('start', { value: { themes: picked } });
       setP(s => ({
         ...s,
         onboarded: true,
@@ -88,26 +92,34 @@ export function useProgress() {
       }));
     },
     keep(c: Card) {
+      track('keep', { card: c.id, theme: c.theme });
       setP(s => ({ ...s, seen: add(s.seen, c.id), kept: add(s.kept, c.id) }));
       nudge(c.theme, NUDGE.keep);
     },
     skip(c: Card) {
+      track('skip', { card: c.id, theme: c.theme });
       setP(s => ({ ...s, seen: add(s.seen, c.id) }));
       nudge(c.theme, NUDGE.skip);
     },
     deeper(c: Card) {
+      track('deeper', { card: c.id, theme: c.theme });
       setP(s => ({ ...s, seen: add(s.seen, c.id), holes: add(s.holes, c.id) }));
       nudge(c.theme, NUDGE.deeper);
     },
     learned(c: Card, steps: number) {
+      track('learn', { card: c.id, theme: c.theme, value: { steps } });
       setP(s => ({ ...s, learned: s.learned + steps }));
       nudge(c.theme, NUDGE.learn);
     },
-    quizzed(right: number, total: number, theme?: ThemeId) {
+    quizzed(right: number, total: number, theme?: ThemeId, kind: 'quiz' | 'rom' = 'quiz', card?: string) {
+      track(kind, { theme, card, value: { right, total } });
       setP(s => ({ ...s, quizRight: s.quizRight + right, quizTotal: s.quizTotal + total }));
       if (theme) nudge(theme, NUDGE.play);
     },
-    tune: nudge,
+    tune(theme: ThemeId, by: number) {
+      track('tune', { theme, value: { by } });
+      nudge(theme, by);
+    },
     togglePick(id: ThemeId) {
       setP(s => {
         const on = s.picked.includes(id);
@@ -120,6 +132,7 @@ export function useProgress() {
       });
     },
     joinWaitlist() {
+      track('waitlist');
       setP(s => ({ ...s, waitlist: true }));
     },
     reset() {

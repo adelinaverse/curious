@@ -4,7 +4,7 @@ import { Quiz } from './Thread';
 
 type Game = null | 'rom' | 'recall';
 
-export function Play({ holes, onQuizzed }: { holes: string[]; onQuizzed: (r: number, t: number) => void }) {
+export function Play({ holes, onQuizzed }: { holes: string[]; onQuizzed: (r: number, t: number, kind?: 'quiz' | 'rom') => void }) {
   const [game, setGame] = useState<Game>(null);
 
   const recall = useMemo(
@@ -12,7 +12,7 @@ export function Play({ holes, onQuizzed }: { holes: string[]; onQuizzed: (r: num
     [holes, game],
   );
 
-  if (game === 'rom') return <RealOrMyth onExit={() => setGame(null)} onScore={onQuizzed} />;
+  if (game === 'rom') return <RealOrMyth onExit={() => setGame(null)} onScore={(r, t) => onQuizzed(r, t, 'rom')} />;
   if (game === 'recall' && recall.length) {
     return (
       <section className="play">

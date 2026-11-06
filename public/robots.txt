@@ -1,6 +1,7 @@
 # CurioUS welcomes search engines and AI assistants.
 User-agent: *
 Allow: /
+Disallow: /admin
 
 User-agent: GPTBot
 Allow: /

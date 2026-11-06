@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { cards, truthLabels, type Card, type Truth } from './content';
 import { pickNext, SESSION_SIZE, useProgress, whyShown } from './store';
+import { track } from './lib/analytics';
 import { Icon, Sheet, TruthTag, Wordmark } from './components/bits';
 import { Onboarding } from './components/Onboarding';
 import { Feed } from './components/Feed';
@@ -40,6 +41,7 @@ export default function App() {
     const n = upNext && !after.seen.includes(upNext.id) ? upNext : pickNext(after);
     setCurrent(n);
     setUpNext(n ? pickNext(after, [n.id]) : null);
+    if (sessionCount + 1 === SESSION_SIZE) track('session_end', { value: { seen: p.seen.length + 1 } });
     setSessionCount(s => s + 1);
   };
 
@@ -80,11 +82,11 @@ export default function App() {
               onSkip={() => { store.skip(current!); advance(); }}
               onDeeper={() => { store.deeper(current!); setOverlay({ kind: 'thread', id: current!.id }); }}
               onWhy={() => setOverlay({ kind: 'why', id: current!.id })}
-              onShare={() => setOverlay({ kind: 'share', id: current!.id })}
+              onShare={() => { track('share', { card: current!.id, theme: current!.theme }); setOverlay({ kind: 'share', id: current!.id }); }}
               onTruth={() => setOverlay({ kind: 'truth' })}
             />
           ))}
-        {tab === 'play' && <Play holes={p.holes} onQuizzed={(r, t) => store.quizzed(r, t)} />}
+        {tab === 'play' && <Play holes={p.holes} onQuizzed={(r, t, kind) => store.quizzed(r, t, undefined, kind)} />}
         {tab === 'you' && (
           <You
             p={p}
@@ -114,9 +116,9 @@ export default function App() {
             if (current?.id === overlay.id) advance();
           }}
           onLearned={n => store.learned(byId(overlay.id), n)}
-          onQuizzed={(r, t) => store.quizzed(r, t, byId(overlay.id).theme)}
+          onQuizzed={(r, t) => store.quizzed(r, t, byId(overlay.id).theme, 'quiz', overlay.id)}
           onWaitlist={store.joinWaitlist}
-          onShare={() => setOverlay({ kind: 'share', id: overlay.id })}
+          onShare={() => { track('share', { card: overlay.id, theme: byId(overlay.id).theme }); setOverlay({ kind: 'share', id: overlay.id }); }}
         />
       )}
       {overlay?.kind === 'why' && (

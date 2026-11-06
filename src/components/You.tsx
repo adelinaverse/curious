@@ -72,7 +72,7 @@ export function You({ p, onTune, onToggle, onOpen, onReset }: Props) {
       <button className="link reset" onClick={() => { if (confirm('Start fresh? This clears your picks and progress.')) onReset(); }}>
         Start fresh
       </button>
-      <p className="credit">CurioUS is a Modish experiment.</p>
+      <p className="credit">CurioUS is a Modish experiment. We count anonymous usage, with no names or emails, to make it better.</p>
     </section>
   );
 }
