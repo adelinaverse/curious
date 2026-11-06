@@ -58,9 +58,10 @@ function ensureVisitor() {
     ready = Promise.resolve(
       supabase!
         .from('visitors')
-        .upsert({ id: visitorId(), themes, device: device(), referrer: source() }, { onConflict: 'id', ignoreDuplicates: true }),
+        .insert({ id: visitorId(), themes, device: device(), referrer: source() }),
     )
-      .then(({ error }) => !error)
+      // 23505 = this visitor is already registered, which is fine.
+      .then(({ error }) => !error || error.code === '23505')
       .catch(() => false);
   }
   return ready;
