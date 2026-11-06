@@ -42,7 +42,10 @@ const fresh = (): Progress => ({
 function load(): Progress {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return { ...fresh(), ...JSON.parse(raw) };
+    if (raw) {
+      const saved = JSON.parse(raw);
+      return { ...fresh(), ...saved, weights: { ...fresh().weights, ...saved.weights } };
+    }
   } catch {
     /* storage unavailable: start fresh */
   }
@@ -136,6 +139,9 @@ export function themeWeight(p: Progress, id: ThemeId) {
 export function pickNext(p: Progress, exclude: string[] = []): Card | null {
   let pool = cards.filter(c => !p.seen.includes(c.id) && !exclude.includes(c.id));
   if (!pool.length) return null;
+  // First few cards stick to the themes you picked, so the feed feels like yours straight away.
+  const mine = pool.filter(c => p.picked.includes(c.theme));
+  if (p.seen.length < 3 && mine.length) pool = mine;
   const total = pool.reduce((n, c) => n + themeWeight(p, c.theme), 0);
   let r = Math.random() * total;
   for (const c of pool) {
