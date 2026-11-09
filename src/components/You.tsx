@@ -1,6 +1,7 @@
 import { cards, themes, truthLabels, type ThemeId, type Truth } from '../content';
 import { themeWeight, type Progress } from '../store';
 import { TruthTag } from './bits';
+import type { Account } from '../lib/account';
 
 interface Props {
   p: Progress;
@@ -8,9 +9,11 @@ interface Props {
   onToggle: (id: ThemeId) => void;
   onOpen: (id: string) => void;
   onReset: () => void;
+  account: Account;
+  onSignIn: () => void;
 }
 
-export function You({ p, onTune, onToggle, onOpen, onReset }: Props) {
+export function You({ p, onTune, onToggle, onOpen, onReset, account, onSignIn }: Props) {
   const total = themes.reduce((n, t) => n + themeWeight(p, t.id), 0);
   const holes = cards.filter(c => p.holes.includes(c.id));
 
@@ -18,6 +21,27 @@ export function You({ p, onTune, onToggle, onOpen, onReset }: Props) {
     <section className="you">
       <h1 className="you-title">Your algorithm</h1>
       <p className="you-sub">This is exactly how your feed is weighted. Every swipe moves it, and so can you.</p>
+
+      {account.signedIn ? (
+        <div className="account">
+          <div className="account-row">
+            <span className="account-avatar" aria-hidden>{(account.profile?.first_name ?? account.email ?? '?').charAt(0).toUpperCase()}</span>
+            <span className="account-who">
+              <b>{account.profile?.first_name ? `Hi, ${account.profile.first_name}` : 'Signed in'}</b>
+              <span>{account.email}. Progress saves automatically.</span>
+            </span>
+          </div>
+          <label className="check">
+            <input type="checkbox" checked={!!account.profile?.marketing_opt_in} onChange={e => account.setOptIn(e.target.checked)} />
+            <span>Send me the occasional email with new rabbit holes</span>
+          </label>
+        </div>
+      ) : (
+        <button className="account account-cta" onClick={onSignIn}>
+          <b>Save your progress</b>
+          <span>Keep your rabbit holes, streak and tuned feed on any device. No password needed.</span>
+        </button>
+      )}
 
       <ul className="mix">
         {themes.map(t => {
@@ -69,10 +93,25 @@ export function You({ p, onTune, onToggle, onOpen, onReset }: Props) {
         ))}
       </ul>
 
+      {account.signedIn && (
+        <div className="account-actions">
+          <button className="link" onClick={() => account.signOut()}>Sign out</button>
+          <button
+            className="link danger"
+            onClick={async () => {
+              if (!confirm('Delete your account and everything saved with it? This cannot be undone.')) return;
+              if (await account.deleteAccount()) onReset();
+              else alert('Something went wrong. Please try again, or email adelina@modishsocial.com.');
+            }}
+          >
+            Delete my account
+          </button>
+        </div>
+      )}
       <button className="link reset" onClick={() => { if (confirm('Start fresh? This clears your picks and progress.')) onReset(); }}>
         Start fresh
       </button>
-      <p className="credit">CurioUS is a Modish experiment. We count anonymous usage, with no names or emails, to make it better.</p>
+      <p className="credit">CurioUS is a Modish experiment. We count anonymous usage to make it better. <a href="/privacy">Privacy policy</a>.</p>
     </section>
   );
 }

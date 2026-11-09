@@ -22,7 +22,7 @@ function uuid() {
   }
 }
 
-function visitorId() {
+export function visitorId() {
   try {
     let id = localStorage.getItem(KEY);
     if (!id) {

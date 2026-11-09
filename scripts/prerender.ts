@@ -68,7 +68,7 @@ ${o.jsonld.map(ld).join('\n')}
 <body>
 <header class="top"><a class="wm" href="/" aria-label="CurioUS home">curio<b>US</b></a><a class="cta" href="/">Open the app</a></header>
 ${o.body}
-<footer><a href="/">Home</a><a href="/explore">Explore all cards</a>${themes.map(t => `<a href="/themes/${t.id}">${esc(t.name)}</a>`).join('')}<p>CurioUS is a Modish experiment. Every card tells you how sure we are: Established, Debated or Speculative.</p></footer>
+<footer><a href="/">Home</a><a href="/explore">Explore all cards</a><a href="/privacy">Privacy</a>${themes.map(t => `<a href="/themes/${t.id}">${esc(t.name)}</a>`).join('')}<p>CurioUS is a Modish experiment. Every card tells you how sure we are: Established, Debated or Speculative.</p></footer>
 </body>
 </html>`;
 }
@@ -209,6 +209,27 @@ mkdirSync(`${OUT}/themes`, { recursive: true });
 for (const c of cards) writeFileSync(`${OUT}/cards/${c.id}.html`, cardPage(c));
 for (const t of themes) writeFileSync(`${OUT}/themes/${t.id}.html`, themePage(t));
 writeFileSync(`${OUT}/explore.html`, explorePage());
+
+// ── Privacy policy ──
+function privacyPage() {
+  const body = `
+<section class="hero" style="${heroBg(230)}"><div><h1>Privacy policy</h1><div class="meta"><span>Last updated ${today}</span></div></div></section>
+<main>
+<p class="lead">CurioUS is a free app made by Modish. We collect as little as we can, and we never sell your data.</p>
+<h2>If you just use the app</h2>
+<p>Your picks and progress are saved in your own browser. To understand what people enjoy, we also record anonymous usage: a random ID for your browser, the themes you pick, which cards you keep, skip or explore, quiz scores, your device type (mobile or desktop) and the website that sent you. This is not linked to your name or email.</p>
+<h2>If you sign in</h2>
+<p>When you save your progress, we store your email address, the first name you give us, and your progress, so you can pick up on any device. Your earlier anonymous usage on that browser is linked to your account.</p>
+<h2>Emails</h2>
+<p>We only send you sign-in links, unless you tick the box to receive occasional emails with new rabbit holes. You can untick it any time in the You tab, or use the unsubscribe link in any email.</p>
+<h2>Who handles your data</h2>
+<p>Data is stored with Supabase, our database provider, and the site is hosted by Vercel. Sign-in emails are sent by our email provider. They process data only to run CurioUS.</p>
+<h2>Your choices</h2>
+<p>You can delete your account and everything saved with it from the You tab at any time. To clear anonymous data from a browser, use "Start fresh" in the You tab or clear your browser storage. For any question or request, email <a href="mailto:adelina@modishsocial.com">adelina@modishsocial.com</a>.</p>
+</main>`;
+  return page({ title: 'Privacy policy | CurioUS', description: 'What CurioUS collects, why, and how to delete your data.', url: `${SITE}/privacy`, body, jsonld: [] });
+}
+writeFileSync(`${OUT}/privacy.html`, privacyPage());
 
 // ── Homepage: crawlable content inside #root (React replaces it when the app loads) ──
 const indexPath = `${OUT}/index.html`;

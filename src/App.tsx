@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { cards, truthLabels, type Card, type Truth } from './content';
 import { pickNext, SESSION_SIZE, useProgress, whyShown } from './store';
 import { track } from './lib/analytics';
@@ -9,13 +9,33 @@ import { Thread } from './components/Thread';
 import { Play } from './components/Play';
 import { You } from './components/You';
 import { Share } from './components/Share';
+import { SignIn } from './components/SignIn';
+import { useAccount } from './lib/account';
+import { LINK_ERROR } from './lib/supabase';
 
 type Tab = 'feed' | 'play' | 'you';
-type Overlay = null | { kind: 'thread' | 'why' | 'share'; id: string } | { kind: 'truth' };
+type Overlay = null | { kind: 'thread' | 'why' | 'share'; id: string } | { kind: 'truth' } | { kind: 'signin'; reason?: string };
 
 export default function App() {
   const store = useProgress();
   const { p } = store;
+  const account = useAccount(p, store.set);
+  const [notice, setNotice] = useState<string | null>(LINK_ERROR ? 'That sign-in link has expired or was already used. Request a new one from the You tab.' : null);
+
+  // A friendly confirmation after arriving from the email link.
+  useEffect(() => {
+    if (!account.justSignedIn) return;
+    setNotice(account.profile?.first_name ? `Welcome, ${account.profile.first_name}. Your progress is saved.` : "You're signed in. Your progress is saved.");
+    account.clearJustSignedIn();
+  }, [account.justSignedIn, account.profile]);
+  useEffect(() => {
+    if (!notice) return;
+    const t = window.setTimeout(() => setNotice(null), 5000);
+    return () => window.clearTimeout(t);
+  }, [notice]);
+  useEffect(() => {
+    if (account.signedIn && overlay?.kind === 'signin') setOverlay(null);
+  }, [account.signedIn]);
   const [tab, setTab] = useState<Tab>('feed');
   // Links like /?card=gobekli-tepe (from card pages and shares) open that card straight away.
   const [linked] = useState(() => {
@@ -45,6 +65,18 @@ export default function App() {
     setSessionCount(s => s + 1);
   };
 
+  const openSignIn = (reason?: string) => setOverlay({ kind: 'signin', reason });
+  const accountLayer = (
+    <>
+      {overlay?.kind === 'signin' && (
+        <Sheet label="Save your progress" onClose={() => setOverlay(null)}>
+          <SignIn reason={overlay.reason} />
+        </Sheet>
+      )}
+      {notice && <div className="toast" role="status">{notice}</div>}
+    </>
+  );
+
   if (!p.onboarded) {
     return (
       <Shell>
@@ -53,7 +85,9 @@ export default function App() {
             store.start(picked);
             if (linked) setOverlay({ kind: 'thread', id: linked });
           }}
+          onSignIn={() => openSignIn('Welcome back. Enter your email and we will send you a link to pick up where you left off.')}
         />
+        {accountLayer}
       </Shell>
     );
   }
@@ -71,6 +105,8 @@ export default function App() {
               outOfCards={!current && sessionCount < SESSION_SIZE}
               onMore={() => setSessionCount(0)}
               onPlay={() => setTab('play')}
+              signedIn={account.signedIn}
+              onSave={() => openSignIn('Keep your streak and rabbit holes, and pick up on any device.')}
             />
           ) : (
             <Feed
@@ -94,6 +130,8 @@ export default function App() {
             onToggle={store.togglePick}
             onOpen={id => setOverlay({ kind: 'thread', id })}
             onReset={() => { store.reset(); setCurrent(null); setSessionCount(0); setTab('feed'); }}
+            account={account}
+            onSignIn={() => openSignIn()}
           />
         )}
       </main>
@@ -143,11 +181,12 @@ export default function App() {
           </ul>
         </Sheet>
       )}
+      {accountLayer}
     </Shell>
   );
 }
 
-function SessionEnd({ p, outOfCards, onMore, onPlay }: { p: ReturnType<typeof useProgress>['p']; outOfCards: boolean; onMore: () => void; onPlay: () => void }) {
+function SessionEnd({ p, outOfCards, onMore, onPlay, signedIn, onSave }: { p: ReturnType<typeof useProgress>['p']; outOfCards: boolean; onMore: () => void; onPlay: () => void; signedIn: boolean; onSave: () => void }) {
   return (
     <section className="end">
       <div className="end-art" aria-hidden />
@@ -165,6 +204,7 @@ function SessionEnd({ p, outOfCards, onMore, onPlay }: { p: ReturnType<typeof us
             Come back tomorrow and your feed will have shifted with you.
           </p>
           <button className="btn btn-dark wide" onClick={onPlay}>Test what stuck</button>
+          {!signedIn && <button className="btn btn-line wide" onClick={onSave}>Save my progress</button>}
           <button className="btn btn-ghost wide" onClick={onMore}>Keep going a little longer</button>
         </>
       )}

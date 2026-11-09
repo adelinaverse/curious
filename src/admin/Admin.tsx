@@ -3,16 +3,23 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { cards, themes } from '../content';
 
+interface Lead {
+  email: string; first_name: string | null; marketing_opt_in: boolean; opt_in_at: string | null; created_at: string;
+  themes: string[] | null; source: string | null; last_seen: string | null; cards_seen: number; rabbit_holes: number;
+}
+
 interface Stats {
   totals: {
     visitors: number; visitors_today: number; visitors_7d: number; active_7d: number; returning: number;
     cards_seen: number; deeper: number; shares: number; quiz_right: number; quiz_total: number; waitlist: number;
+    signups?: number; signups_7d?: number; opted_in?: number;
   };
   daily: { day: string; new_visitors: number; active: number }[];
   themes: { theme: string; picks: number }[];
   cards: { card_id: string; theme: string; keeps: number; skips: number; deeper: number; shares: number }[];
   sources: { source: string; visitors: number }[];
   devices: { device: string; visitors: number }[];
+  leads?: Lead[];
   recent: { id: string; first_seen: string; themes: string[]; device: string | null; referrer: string | null; last_seen: string | null; cards: number; deeper: number }[];
 }
 
@@ -138,6 +145,8 @@ function Dashboard({ email }: { email: string }) {
           <Tile label="Shares" value={fmt(t.shares)} />
           <Tile label="Quiz answers right" value={pct(t.quiz_right, t.quiz_total)} note={`${fmt(t.quiz_total)} answered`} />
           <Tile label="Divination waitlist" value={fmt(t.waitlist)} />
+          <Tile label="Sign-ups" value={fmt(t.signups ?? 0)} note={`${fmt(t.signups_7d ?? 0)} this week, ${pct(t.signups ?? 0, t.visitors)} of visitors`} />
+          <Tile label="Opted in to emails" value={fmt(t.opted_in ?? 0)} note={pct(t.opted_in ?? 0, t.signups ?? 0) + ' of sign-ups'} />
         </section>
 
         <section className="panel">
@@ -164,6 +173,8 @@ function Dashboard({ email }: { email: string }) {
           <p className="sub">Sorted by go deeper taps. Click a column to sort.</p>
           <CardTable rows={stats.cards} />
         </section>
+
+        <Leads leads={stats.leads ?? []} />
 
         <section className="panel">
           <h2>Latest visitors</h2>
@@ -297,5 +308,62 @@ function CardTable({ rows }: { rows: Stats['cards'] }) {
         </tbody>
       </table>
     </div>
+  );
+}
+
+function csvCell(v: unknown) {
+  const t = v == null ? '' : String(v);
+  return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+}
+
+function downloadCsv(leads: Lead[], name: string) {
+  const head = ['first_name', 'email', 'opted_in', 'opted_in_at', 'signed_up', 'last_active', 'themes', 'source', 'cards_seen', 'rabbit_holes'];
+  const rows = leads.map(l => [l.first_name, l.email, l.marketing_opt_in ? 'yes' : 'no', l.opt_in_at, l.created_at, l.last_seen, (l.themes ?? []).map(themeName).join('; '), l.source, l.cards_seen, l.rabbit_holes]);
+  const csv = [head, ...rows].map(r => r.map(csvCell).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function Leads({ leads }: { leads: Lead[] }) {
+  const [onlyOptIn, setOnlyOptIn] = useState(false);
+  const shown = onlyOptIn ? leads.filter(l => l.marketing_opt_in) : leads;
+  const stamp = new Date().toISOString().slice(0, 10);
+  return (
+    <section className="panel">
+      <div className="panel-head">
+        <div>
+          <h2>Leads</h2>
+          <p className="sub">Everyone who signed in. Only email people who opted in.</p>
+        </div>
+        <div className="panel-actions">
+          <label className="toggle"><input type="checkbox" checked={onlyOptIn} onChange={e => setOnlyOptIn(e.target.checked)} /> Opted in only</label>
+          <button className="btn ghost" disabled={!shown.length} onClick={() => downloadCsv(shown, `curious-leads-${onlyOptIn ? 'opted-in-' : ''}${stamp}.csv`)}>Download CSV</button>
+        </div>
+      </div>
+      <div className="scroll">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Emails OK</th><th>Themes</th><th>Came from</th><th className="n">Cards</th><th className="n">Rabbit holes</th><th>Signed up</th><th>Last active</th></tr></thead>
+          <tbody>
+            {shown.map(l => (
+              <tr key={l.email}>
+                <td>{l.first_name || '–'}</td>
+                <td><a href={`mailto:${l.email}`}>{l.email}</a></td>
+                <td>{l.marketing_opt_in ? 'Yes' : 'No'}</td>
+                <td>{(l.themes ?? []).map(themeName).join(', ') || '–'}</td>
+                <td>{l.source || 'direct'}</td>
+                <td className="n">{l.cards_seen}</td>
+                <td className="n">{l.rabbit_holes}</td>
+                <td>{when(l.created_at)}</td>
+                <td>{when(l.last_seen)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {!shown.length && <p className="empty">{leads.length ? 'Nobody has opted in yet.' : 'No sign-ups yet. They will appear here as people save their progress.'}</p>}
+      </div>
+    </section>
   );
 }

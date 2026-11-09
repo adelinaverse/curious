@@ -10,7 +10,7 @@ const swatch = (id: string, hue: number) => {
   };
 };
 
-export function Onboarding({ onStart }: { onStart: (picked: ThemeId[]) => void }) {
+export function Onboarding({ onStart, onSignIn }: { onStart: (picked: ThemeId[]) => void; onSignIn: () => void }) {
   const [step, setStep] = useState<'hello' | 'pick'>('hello');
   const [picked, setPicked] = useState<ThemeId[]>([]);
   const toggle = (id: ThemeId) => setPicked(p => (p.includes(id) ? p.filter(x => x !== id) : [...p, id]));
@@ -23,7 +23,10 @@ export function Onboarding({ onStart }: { onStart: (picked: ThemeId[]) => void }
           <p className="hello-line">The feed you steer.</p>
           <p className="hello-sub">Short, surprising cards about the world. Every swipe tunes what comes next, and you can always see why.</p>
         </div>
-        <button className="btn btn-light" onClick={() => setStep('pick')}>Start exploring</button>
+        <div className="hello-actions">
+          <button className="btn btn-light" onClick={() => setStep('pick')}>Start exploring</button>
+          <button className="hello-signin" onClick={onSignIn}>I already have an account</button>
+        </div>
       </section>
     );
   }
