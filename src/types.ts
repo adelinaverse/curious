@@ -2,7 +2,7 @@
 
 export type Truth = 'established' | 'debated' | 'speculative';
 
-export type ThemeId = 'history' | 'knowledge' | 'nature' | 'space' | 'unexplained' | 'consciousness' | 'sacred';
+export type ThemeId = 'history' | 'knowledge' | 'nature' | 'space' | 'unexplained' | 'consciousness' | 'sacred' | 'myths';
 
 export interface Theme {
   id: ThemeId;

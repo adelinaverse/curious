@@ -270,4 +270,42 @@ export const consciousness: Card[] = [
     ],
     sources: [{ label: "General anaesthesia", url: "https://en.wikipedia.org/wiki/General_anaesthesia" }],
   },
+  {
+    id: "blindsight",
+    theme: "consciousness",
+    truth: "established",
+    hook: "Some blind people can dodge obstacles they say they cannot see.",
+    body: "When the brain's main vision area, called V1, is destroyed, people lose conscious sight. Yet some can still point to, guess or avoid things in front of them far better than chance. Researcher Lawrence Weiskrantz and colleagues named this blindsight in 1974.",
+    deeper: [
+      { title: "The hallway test", body: "A man known as TN lost V1 on both sides of his brain after two strokes. Researchers asked him to walk a cluttered corridor without his cane. He made it to the end without bumping into anything, even stepping around a bin." },
+      { title: "Feeling without seeing", body: "Some patients can guess the emotion on a face they cannot see, and their own face muscles subtly mirror it. This is called affective blindsight." },
+      { title: "The open question", body: "A few researchers argue blindsight is really very faint conscious vision, not vision without awareness at all. Most of the research treats it as a real gap between seeing and knowing you see." },
+    ],
+    learn: [
+      { step: "First noticed in war", body: "After the First World War, neurologist George Riddoch described soldiers with head wounds who could see moving objects but not still ones. Some still call this Riddoch syndrome.", branches: ["What V1 does"] },
+    ],
+    quiz: [
+      { q: "Damage to which brain area causes blindsight?", options: ["The hippocampus", "The primary visual cortex (V1)", "The cerebellum"], answer: 1, why: "Blindsight follows damage to V1, the main visual area at the back of the brain." },
+    ],
+    sources: [{ label: "Blindsight", url: "https://en.wikipedia.org/wiki/Blindsight" }],
+  },
+  {
+    id: "libet-free-will",
+    theme: "consciousness",
+    truth: "debated",
+    hook: "Your brain may start a choice before you feel yourself making it.",
+    body: "In 1983, Benjamin Libet asked people to flick their wrist whenever they felt like it, and to note the moment they felt the urge. Brain activity linked to the movement began about half a second before the act. The feeling of deciding came only about 200 milliseconds before it.",
+    deeper: [
+      { title: "Free won't", body: "Libet himself did not think this ruled out free will. He suggested we still have a brief window to veto an action once we become aware of it." },
+      { title: "The pushback", body: "In 2012, Schurger and colleagues argued that the early brain signal may be random background noise building up, not a hidden decision. A 2019 study found the signal for arbitrary choices but not for deliberate ones." },
+      { title: "Still open", body: "There is no majority agreement on what Libet's results mean for free will." },
+    ],
+    learn: [
+      { step: "Readiness potential", body: "This is the slow build of electrical activity over the brain's motor areas before a voluntary movement. It was first described in 1965." },
+    ],
+    quiz: [
+      { q: "Roughly when did people report feeling the urge to move?", options: ["2 seconds before", "200 milliseconds before", "After they moved"], answer: 1, why: "On average about 200 milliseconds before the movement, after the brain signal had already begun." },
+    ],
+    sources: [{ label: "Benjamin Libet", url: "https://en.wikipedia.org/wiki/Benjamin_Libet" }],
+  },
 ];

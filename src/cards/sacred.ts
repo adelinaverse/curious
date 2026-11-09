@@ -262,4 +262,45 @@ export const sacred: Card[] = [
     ],
     sources: [{ label: "Ley line", url: "https://en.wikipedia.org/wiki/Ley_line" }],
   },
+  {
+    id: "pythagorean-comma",
+    theme: "sacred",
+    truth: "established",
+    hook: "Perfect musical harmony doesn't quite add up, and every piano hides the gap.",
+    body: "Stack twelve pure musical fifths and you should land back on the same note, seven octaves up. But you overshoot by a small amount called the Pythagorean comma, about a quarter of a semitone. Musicians have wrestled with this tiny gap for over two thousand years.",
+    deeper: [
+      { title: "The exact number", body: "The gap is the ratio 531441 to 524288, or about 23.46 cents. Euclid is the first known writer to record it." },
+      { title: "How pianos cope", body: "Modern equal temperament shrinks every fifth by about 2 cents. No fifth is perfectly pure, but every key sounds equally in tune." },
+    ],
+    learn: [
+      { step: "What a fifth is", body: "A pure fifth is two notes whose frequencies are in the ratio 3 to 2, like C up to G. It is one of the sweetest sounds in music.", branches: ["The music of the spheres"] },
+      { step: "Known in China too", body: "Chinese scholars noticed the same problem. Around 50 BCE, Jing Fang extended the cycle of fifths to 53 notes to get closer to a perfect fit." },
+    ],
+    quiz: [
+      { q: "About how big is the Pythagorean comma?", options: ["A full octave", "A quarter of a semitone", "Exactly one note"], answer: 1, why: "It is about 23.46 cents, roughly a quarter of a semitone." },
+    ],
+    sources: [{ label: "Pythagorean comma", url: "https://en.wikipedia.org/wiki/Pythagorean_comma" }],
+  },
+  {
+    id: "parthenon-golden-ratio",
+    theme: "sacred",
+    truth: "debated",
+    hook: "Is the Parthenon really built on the golden ratio?",
+    body: "Many books say the Parthenon in Athens, built between 447 and 432 BCE, was designed around the golden ratio of about 1.618. The idea became popular through writers like Adolf Zeising in the 1800s. Measure it yourself, though, and the answer depends a lot on where you put the ruler.",
+    deeper: [
+      { title: "The sceptics", body: "In 1992, mathematician George Markowsky pointed out that common measurements give ratios like 2.25 or 1.72, not 1.618. Astrophysicist Mario Livio also found the golden ratio poorly supported by the actual dimensions." },
+      { title: "The supporters", body: "Others reply that if you measure from different points, such as from the second step or from the tops of the columns, golden proportions appear." },
+      { title: "Hard to settle", body: "Livio concluded it is difficult to say for sure. Part of the problem is that published measurements of the temple vary from source to source." },
+    ],
+    learn: [
+      { step: "The golden ratio", body: "It is the number you get when a line is split so the whole relates to the long part as the long part relates to the short. It is about 1.618.", branches: ["Sunflowers and Fibonacci"] },
+    ],
+    quiz: [
+      { q: "Who argued in 1992 that the Parthenon's golden ratio is a misconception?", options: ["George Markowsky", "Adolf Zeising", "Pericles"], answer: 0, why: "Markowsky's paper 'Misconceptions about the Golden Ratio' challenged the claim." },
+    ],
+    sources: [
+      { label: "Mario Livio on the Parthenon (excerpt)", url: "https://www.goldennumber.net/wp-content/uploads/Mario_Livio-The_Golden_Ratio-The_Parthenon.pdf" },
+      { label: "Markowsky's misconceptions reviewed, goldennumber.net", url: "https://www.goldennumber.net/golden-ratio-misconceptions-by-george-markowsky-reviewed/?amp" },
+    ],
+  },
 ];

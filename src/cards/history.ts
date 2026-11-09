@@ -282,4 +282,26 @@ export const history: Card[] = [
     ],
     sources: [{ label: "Thonis-Heracleion", url: "https://en.wikipedia.org/wiki/Thonis-Heracleion" }],
   },
+  {
+    id: "cleopatra-moon",
+    theme: "history",
+    truth: "established",
+    hook: "Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid.",
+    body: "The Great Pyramid of Giza was finished around 2560 BCE. Cleopatra died in 30 BCE, more than 2,500 years later. Apollo 11 landed on the Moon in 1969, about 2,000 years after her death.",
+    deeper: [
+      { title: "Ancient to the ancients", body: "To Cleopatra, the Great Pyramid was already about 2,500 years old." },
+      { title: "A record that lasted", body: "The Great Pyramid was the tallest human-made structure in the world for over 3,800 years." },
+    ],
+    learn: [
+      { step: "Built for a king", body: "It was made as a tomb for the pharaoh Khufu and was first about 146.5 metres tall." },
+      { step: "The last pharaoh", body: "Cleopatra was born in Alexandria in 70 or 69 BCE and died there in August 30 BCE, aged 39.", branches: ["Who were the Ptolemies?"] },
+    ],
+    quiz: [
+      { q: "About when was the Great Pyramid finished?", options: ["2560 BCE", "1200 BCE", "30 BCE"], answer: 0, why: "It was completed around 2560 BCE for the pharaoh Khufu." },
+    ],
+    sources: [
+      { label: "Cleopatra", url: "https://en.wikipedia.org/wiki/Cleopatra" },
+      { label: "Great Pyramid of Giza", url: "https://webarchive.library.unt.edu/web/20150516081455/http://en.wikipedia.org/wiki/Great_Pyramid_of_Giza" },
+    ],
+  },
 ];

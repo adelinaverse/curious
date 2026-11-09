@@ -253,4 +253,44 @@ export const space: Card[] = [
     ],
     sources: [{ label: "Sun overview", url: "https://en.wikipedia.org/wiki/Sun" }],
   },
+  {
+    id: "bootes-void",
+    theme: "space",
+    truth: "established",
+    hook: "There's a hole in the universe so empty it's nicknamed 'the Great Nothing'.",
+    body: "In 1981, astronomer Robert Kirshner and colleagues found a vast, almost empty region in the direction of the constellation Boötes. It is roughly 200 million light years in radius. A space that size would normally hold about 2,000 galaxies, but only around 60 have been found there.",
+    deeper: [
+      { title: "How far away", body: "Its centre lies about 700 million light years from Earth." },
+      { title: "How it formed", body: "One idea is that several smaller voids merged over time. It does not seem to break our main model of the universe." },
+    ],
+    learn: [
+      { step: "A cosmic web", body: "Galaxies are not spread evenly. They gather in threads and walls, with huge empty bubbles between them called voids.", branches: ["What is dark matter?"] },
+    ],
+    quiz: [
+      { q: "About how many galaxies are in the Boötes Void?", options: ["None", "About 60", "About 2,000"], answer: 1, why: "Only about 60, against roughly 2,000 you would expect in a region that size." },
+    ],
+    sources: [{ label: "Boötes Void", url: "https://en.wikipedia.org/wiki/Bo%C3%B6tes_Void" }],
+  },
+  {
+    id: "changing-north-star",
+    theme: "space",
+    truth: "established",
+    hook: "When the Great Pyramid was built, the North Star was a different star.",
+    body: "Earth wobbles slowly like a spinning top, tracing a full circle about every 26,000 years. So the point in the sky our axis points to drifts over time. From about 3900 to 1800 BCE, the pole star was Thuban in the constellation Draco, not Polaris. The Great Pyramid was finished around 2560 BCE.",
+    deeper: [
+      { title: "Polaris is still getting closer", body: "Polaris will come nearest to the true north pole of the sky around the year 2100, then slowly drift away." },
+      { title: "Vega's turn", body: "Around 14,500 CE, the bright star Vega will be near the pole. Thuban will be the pole star again around 20,346 CE." },
+    ],
+    learn: [
+      { step: "Precession", body: "This slow wobble of Earth's axis is called precession.", branches: ["The Great Year"] },
+    ],
+    quiz: [
+      { q: "Roughly how long does one full wobble of Earth's axis take?", options: ["365 years", "2,600 years", "26,000 years"], answer: 2, why: "About 26,000 years for one full circle." },
+    ],
+    sources: [
+      { label: "Pole star", url: "https://en.wikipedia.org/wiki/Pole_star" },
+      { label: "Thuban", url: "https://en.wikipedia.org/wiki/Thuban" },
+      { label: "Great Pyramid of Giza", url: "https://webarchive.library.unt.edu/web/20150516081455/http://en.wikipedia.org/wiki/Great_Pyramid_of_Giza" },
+    ],
+  },
 ];

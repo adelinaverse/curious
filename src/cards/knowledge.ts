@@ -279,4 +279,23 @@ export const knowledge: Card[] = [
     ],
     sources: [{ label: "Piri Reis map", url: "https://en.wikipedia.org/wiki/Piri_Reis_map" }],
   },
+  {
+    id: "archimedes-palimpsest",
+    theme: "knowledge",
+    truth: "established",
+    hook: "Lost works of Archimedes were hiding under a medieval religious text.",
+    body: "In 1229, monks scraped and washed an old book of Archimedes and reused the pages for a Christian liturgical text. Beneath the new writing lay the only known copy of his work The Method. Scientists spent years using light and X-rays to read it again.",
+    deeper: [
+      { title: "What was hidden", body: "Besides The Method, it holds the only surviving Greek text of On Floating Bodies and his Ostomachion, plus speeches by Hypereides and a commentary on Aristotle." },
+      { title: "Reading the invisible", body: "From 1999 to 2008, a team at the Walters Art Museum in Baltimore imaged every page. In 2005, X-ray fluorescence at the Stanford Linear Accelerator Center revealed text hidden under forged gold-leaf paintings." },
+    ],
+    learn: [
+      { step: "What a palimpsest is", body: "A manuscript page that has been scraped clean and written over. Parchment was precious, so this was common." },
+      { step: "Sold at auction", body: "An anonymous buyer bought it at Christie's in New York in 1998 for $2 million." },
+    ],
+    quiz: [
+      { q: "When was the Archimedes text overwritten?", options: ["229 BCE", "1229", "1929"], answer: 1, why: "It was scraped and reused in 1229." },
+    ],
+    sources: [{ label: "Archimedes Palimpsest", url: "https://en.wikipedia.org/wiki/Archimedes_Palimpsest" }],
+  },
 ];

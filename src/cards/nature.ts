@@ -255,4 +255,41 @@ export const nature: Card[] = [
     ],
     sources: [{ label: "Signature whistle", url: "https://en.wikipedia.org/wiki/Signature_whistle" }],
   },
+  {
+    id: "mimosa-memory",
+    theme: "nature",
+    truth: "debated",
+    hook: "A plant with no brain seemed to remember a lesson for a month.",
+    body: "The sensitive plant, Mimosa pudica, folds its leaves when touched. In a 2014 study, Monica Gagliano's team dropped potted plants 15 centimetres again and again. They soon stopped folding for the harmless drop, and still ignored it at least 28 days later.",
+    deeper: [
+      { title: "Not just tired", body: "The plants still folded when shaken, so they had not simply worn out. They seemed to learn that the drop was safe." },
+      { title: "Why bother?", body: "Folding has a cost. While the leaves are shut, the plant's photosynthesis drops by about 40 percent." },
+      { title: "Why it's debated", body: "Scientists disagree on whether this should be called learning and memory, since plants have no neurons. Neither proposed mechanism for it is generally accepted yet." },
+    ],
+    learn: [
+      { step: "How it folds", body: "A touch sends an electrical signal to small joints at the base of each leaflet. Water rushes out of cells there, and the leaflets collapse.", branches: ["Can plants learn?"] },
+    ],
+    quiz: [
+      { q: "How long did the plants keep ignoring the drop?", options: ["A few minutes", "At least 28 days", "One year"], answer: 1, why: "They did not react to dropping for at least 28 days after training." },
+    ],
+    sources: [{ label: "Mimosa pudica", url: "https://en.wikipedia.org/wiki/Mimosa_pudica" }],
+  },
+  {
+    id: "frozen-frog",
+    theme: "nature",
+    truth: "established",
+    hook: "Every winter, the wood frog freezes solid, then thaws and hops away.",
+    body: "The North American wood frog can survive with around 65 to 70 percent of its body water turned to ice. While frozen it has no heartbeat, no breathing and no detectable brain activity. In spring it thaws and carries on as if nothing happened.",
+    deeper: [
+      { title: "Sugar antifreeze", body: "As ice starts to form, the frog's liver floods its body with glucose. This sugar, along with urea, helps protect its cells from ice damage." },
+      { title: "Months on ice", body: "In Alaska, frogs studied in the wild stayed frozen for about 193 days in a row." },
+    ],
+    learn: [
+      { step: "Arctic frog", body: "It is the only North American frog found north of the Arctic Circle." },
+    ],
+    quiz: [
+      { q: "What does the wood frog use as antifreeze?", options: ["Salt", "Glucose", "Fat"], answer: 1, why: "Its liver turns stored glycogen into glucose, which protects its cells." },
+    ],
+    sources: [{ label: "Wood frog", url: "https://en.wikipedia.org/wiki/Wood_frog" }],
+  },
 ];

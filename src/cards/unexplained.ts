@@ -262,4 +262,42 @@ export const unexplained: Card[] = [
     ],
     sources: [{ label: "Tunguska event", url: "https://en.wikipedia.org/wiki/Tunguska_event" }],
   },
+  {
+    id: "nazca-lines-purpose",
+    theme: "unexplained",
+    truth: "debated",
+    hook: "Nobody agrees why the Nazca drew giant pictures you can only see from the sky.",
+    body: "Between about 500 BCE and 500 CE, people in southern Peru scraped lines and figures into the desert, including a hummingbird, a monkey and a spider. The lines add up to more than 1,300 kilometres. What they were for is still argued over.",
+    deeper: [
+      { title: "A calendar in the sand?", body: "German mathematician Maria Reiche, working with Paul Kosok, thought many marked the rising and setting of the Sun and stars. In 1990, Gerald Hawkins and Anthony Aveni concluded the evidence was not strong enough to support this." },
+      { title: "Water and ritual", body: "Anthropologist Johan Reinhard links the lines to the worship of water, in one of the driest places on Earth." },
+      { title: "Not aliens", body: "In 1968, Erich von Däniken suggested ancient astronauts. Investigator Joe Nickell showed the figures can be reproduced on the ground with simple tools." },
+    ],
+    learn: [
+      { step: "Still finding more", body: "In 2024, a team from Yamagata University and IBM Research used AI to help find 303 figures no one had known about.", branches: ["How AI spots geoglyphs"] },
+      { step: "Protected", body: "The lines became a UNESCO World Heritage Site in 1994." },
+    ],
+    quiz: [
+      { q: "Who argued that the lines were linked to astronomy?", options: ["Maria Reiche", "Erich von Däniken", "Joe Nickell"], answer: 0, why: "Reiche, with Paul Kosok, proposed that the lines marked solstice sunrises and sunsets." },
+    ],
+    sources: [{ label: "Nazca lines", url: "https://en.wikipedia.org/wiki/Nazca_lines" }],
+  },
+  {
+    id: "the-bloop",
+    theme: "unexplained",
+    truth: "established",
+    hook: "In 1997, an ocean sound so loud it was heard 5,000 km away sparked talk of a sea monster.",
+    body: "Underwater microphones in the Pacific picked up a powerful, rising sound that NOAA named the Bloop. It was traced to a remote spot in the South Pacific, west of the tip of South America. For years people wondered if a giant creature had made it.",
+    deeper: [
+      { title: "The answer", body: "Scientists later matched it to an icequake, a huge crack or break in Antarctic ice. Similar sounds were recorded from a breaking iceberg near South Georgia in 2008." },
+      { title: "From mystery to known", body: "By around 2012 there was broad agreement that the Bloop came from ice, not an animal." },
+    ],
+    learn: [
+      { step: "Pinning it down", body: "Several hydrophones heard it, so NOAA could roughly triangulate the source to around 50 degrees south, 100 degrees west.", branches: ["Other strange ocean sounds"] },
+    ],
+    quiz: [
+      { q: "What do scientists think made the Bloop?", options: ["A giant squid", "A submarine", "Breaking ice"], answer: 2, why: "It matches the sound of a large icequake." },
+    ],
+    sources: [{ label: "Bloop", url: "https://www.wikiwand.com/en/Bloop" }],
+  },
 ];

@@ -17,6 +17,7 @@ import { space } from './cards/space';
 import { unexplained } from './cards/unexplained';
 import { consciousness } from './cards/consciousness';
 import { sacred } from './cards/sacred';
+import { myths } from './cards/myths';
 
 export * from './types';
 
@@ -28,6 +29,7 @@ export const themes: Theme[] = [
   { id: 'unexplained', name: 'Unexplained', line: 'Open questions, honest answers', hue: 338 },
   { id: 'consciousness', name: 'Consciousness', line: 'The mind and what we can\'t explain yet', hue: 292 },
   { id: 'sacred', name: 'Sacred Science', line: 'Where pattern, sound and spirit meet', hue: 48 },
+  { id: 'myths', name: 'Myths & Legends', line: 'Old stories, real roots', hue: 100 },
 ];
 
 export const truthLabels: Record<Truth, { name: string; meaning: string }> = {
@@ -44,6 +46,7 @@ export const cards: Card[] = [
   ...unexplained,
   ...consciousness,
   ...sacred,
+  ...myths,
 ];
 
 export { realOrMyth } from './games/realOrMyth';
