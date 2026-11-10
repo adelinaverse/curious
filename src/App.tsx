@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { cards, truthLabels, type Card, type Truth } from './content';
 import { pickNext, SESSION_SIZE, useProgress, whyShown } from './store';
 import { track } from './lib/analytics';
@@ -10,12 +10,15 @@ import { Play } from './components/Play';
 import { You } from './components/You';
 import { Share } from './components/Share';
 import { SignIn } from './components/SignIn';
+import { Gate } from './components/Gate';
+import { supabase } from './lib/supabase';
 import { useAccount } from './lib/account';
 import { LINK_ERROR } from './lib/supabase';
 
 type Tab = 'feed' | 'play' | 'you';
 
 // Remember that we've already asked once after a rabbit hole, so we never nag.
+const FREE_CARDS = 8;
 const PROMPT_KEY = 'curious-save-prompted';
 const savePrompted = () => { try { return localStorage.getItem(PROMPT_KEY) === '1'; } catch { return true; } };
 const markSavePrompted = () => { try { localStorage.setItem(PROMPT_KEY, '1'); } catch { /* ignore */ } };
@@ -38,9 +41,18 @@ export default function App() {
     const t = window.setTimeout(() => setNotice(null), 5000);
     return () => window.clearTimeout(t);
   }, [notice]);
+  const wasSignedIn = useRef<boolean | null>(null);
   useEffect(() => {
+    if (!account.ready) return;
     if (account.signedIn && overlay?.kind === 'signin') setOverlay(null);
-  }, [account.signedIn]);
+    // Just signed up or in during this visit (not a returning session on load): start a fresh run of cards.
+    if (account.signedIn && wasSignedIn.current === false) {
+      setSessionCount(0);
+      setCurrent(null);
+      setNotice(n => n ?? "You're in. Everything's unlocked and your progress is saved.");
+    }
+    wasSignedIn.current = account.signedIn;
+  }, [account.signedIn, account.ready]);
   const [tab, setTab] = useState<Tab>('feed');
   // Links like /?card=gobekli-tepe (from card pages and shares) open that card straight away.
   const [linked] = useState(() => {
@@ -51,6 +63,7 @@ export default function App() {
   const [current, setCurrent] = useState<Card | null>(null);
   const [upNext, setUpNext] = useState<Card | null>(null);
   const [sessionCount, setSessionCount] = useState(0);
+  const gateLogged = useRef(false);
 
   // Keep a current card and a peek of the next one ready.
   if (p.onboarded && !current && sessionCount < SESSION_SIZE) {
@@ -86,16 +99,12 @@ export default function App() {
     return (
       <Shell>
         <Onboarding
-          onStart={(picked, sentTo) => {
+          onStart={picked => {
             store.start(picked);
-            if (sentTo) {
-              markSavePrompted();
-              setNotice(`Check ${sentTo} for your sign-in link. Your feed is ready meanwhile.`);
-            }
             if (linked) setOverlay({ kind: 'thread', id: linked });
           }}
           signedIn={account.signedIn}
-          onSignIn={() => openSignIn('Welcome back. Enter your email and we will send you a link to pick up where you left off.')}
+          onSignIn={() => openSignIn('Welcome back. Enter your email and we will send you a code to pick up where you left off.')}
         />
         {accountLayer}
       </Shell>
@@ -104,11 +113,20 @@ export default function App() {
 
   const byId = (id: string) => cards.find(c => c.id === id)!;
   const sessionOver = sessionCount >= SESSION_SIZE || !current;
+  // Free preview: one full session. After that, a free account unlocks the feed and games.
+  const gated = !!supabase && !account.signedIn && p.seen.length >= FREE_CARDS;
+  if (gated && !gateLogged.current) {
+    gateLogged.current = true;
+    track('gate', { value: { seen: p.seen.length } });
+  }
 
   return (
     <Shell>
       <main className="screen">
-        {tab === 'feed' &&
+        {tab !== 'you' && gated ? (
+          <Gate seen={p.seen.length} holes={p.holes.length} place={tab === 'play' ? 'play' : 'feed'} />
+        ) : null}
+        {tab === 'feed' && !gated &&
           (sessionOver ? (
             <SessionEnd
               p={p}
@@ -132,7 +150,7 @@ export default function App() {
               onTruth={() => setOverlay({ kind: 'truth' })}
             />
           ))}
-        {tab === 'play' && <Play holes={p.holes} onQuizzed={(r, t, kind) => store.quizzed(r, t, undefined, kind)} />}
+        {tab === 'play' && !gated && <Play holes={p.holes} onQuizzed={(r, t, kind) => store.quizzed(r, t, undefined, kind)} />}
         {tab === 'you' && (
           <You
             p={p}
@@ -146,7 +164,7 @@ export default function App() {
         )}
       </main>
 
-      <nav className={`tabs ${tab === 'feed' && !sessionOver ? 'is-dark' : ''}`} aria-label="Main">
+      <nav className={`tabs ${tab === 'feed' && !sessionOver && !gated ? 'is-dark' : ''}`} aria-label="Main">
         {([['feed', 'Feed'], ['play', 'Play'], ['you', 'You']] as const).map(([id, label]) => (
           <button key={id} className={tab === id ? 'is-on' : ''} onClick={() => setTab(id)} aria-current={tab === id}>
             <Icon name={id} />

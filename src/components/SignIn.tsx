@@ -1,40 +1,89 @@
 import { useState, type FormEvent } from 'react';
-import { requestSignIn } from '../lib/account';
+import { requestSignIn, verifyCode } from '../lib/account';
+
+interface Props {
+  title?: string;
+  reason?: string;
+  submitLabel?: string;
+  onSkip?: () => void; // shows a quiet "skip" option (never on the sign-up wall)
+  skipLabel?: string;
+  hideTitle?: boolean;
+}
 
 // Sign-in and sign-up are the same form: new emails create an account, known ones just sign in.
-export function SignIn({ reason, title, onSent, onSkip }: { reason?: string; title?: string; onSent?: (email: string) => void; onSkip?: () => void }) {
+// Step 1 asks for name and email. Step 2 takes the code from the email (or they tap the link).
+// Once signed in, the app moves on by itself.
+export function SignIn({ title, reason, submitLabel, onSkip, skipLabel, hideTitle }: Props) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [optIn, setOptIn] = useState(false);
-  const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const [code, setCode] = useState('');
+  const [step, setStep] = useState<'form' | 'code'>('form');
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [resent, setResent] = useState(false);
 
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    setState('sending');
+  const send = async (e?: FormEvent) => {
+    e?.preventDefault();
+    setBusy(true);
     setError('');
     const { error } = await requestSignIn(email, name, optIn);
-    if (error) {
-      setError(error);
-      setState('idle');
-    } else if (onSent) onSent(email.trim());
-    else setState('sent');
+    setBusy(false);
+    if (error) setError(error);
+    else setStep('code');
   };
 
-  if (state === 'sent') {
+  const verify = async (e: FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setError('');
+    const { error } = await verifyCode(email, code);
+    setBusy(false);
+    if (error) setError(error);
+  };
+
+  if (step === 'code') {
     return (
-      <div className="signin">
-        <h2 className="sheet-title">Check your email</h2>
-        <p className="signin-lead">We sent a sign-in link to <strong>{email.trim()}</strong>. Tap it and you'll land back here, signed in, with your progress saved.</p>
-        <p className="note">Can't see it? Check your spam or promotions folder, or <button className="text-btn" onClick={() => setState('idle')}>try a different email</button>.</p>
-      </div>
+      <form className="signin" onSubmit={verify}>
+        {!hideTitle && <h2 className="sheet-title">Check your email</h2>}
+        <p className="signin-lead">
+          We sent a code to <strong>{email.trim()}</strong>. Type it in below, or tap the link in the email.
+        </p>
+        <label className="field">
+          <span>Code</span>
+          <input
+            className="code-input"
+            value={code}
+            onChange={e => setCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 8))}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="123456"
+            required
+            minLength={6}
+            autoFocus
+          />
+        </label>
+        {error && <p className="form-error" role="alert">{error}</p>}
+        <button className="btn btn-dark wide" disabled={busy || code.length < 6}>{busy ? 'Checking…' : 'Continue'}</button>
+        <p className="note center">
+          No email? Check spam or promotions,{' '}
+          <button type="button" className="text-btn" disabled={busy || resent} onClick={() => { setResent(true); send(); }}>
+            {resent ? 'sent again' : 'send it again'}
+          </button>{' '}
+          or{' '}
+          <button type="button" className="text-btn" onClick={() => { setStep('form'); setCode(''); setError(''); setResent(false); }}>
+            use a different email
+          </button>.
+        </p>
+        {onSkip && <button type="button" className="btn btn-ghost wide" onClick={onSkip}>I'll confirm later</button>}
+      </form>
     );
   }
 
   return (
-    <form className="signin" onSubmit={submit}>
-      <h2 className="sheet-title">{title ?? 'Save your progress'}</h2>
-      <p className="signin-lead">{reason ?? 'Keep your rabbit holes, streak and tuned feed on any device.'} No password. We email you a link.</p>
+    <form className="signin" onSubmit={send}>
+      {!hideTitle && <h2 className="sheet-title">{title ?? 'Save your progress'}</h2>}
+      {reason && <p className="signin-lead">{reason}</p>}
       <label className="field">
         <span>First name</span>
         <input value={name} onChange={e => setName(e.target.value)} autoComplete="given-name" maxLength={60} />
@@ -48,9 +97,9 @@ export function SignIn({ reason, title, onSent, onSkip }: { reason?: string; tit
         <span>Send me the occasional email with new rabbit holes. Unsubscribe any time.</span>
       </label>
       {error && <p className="form-error" role="alert">{error}</p>}
-      <button className="btn btn-dark wide" disabled={state === 'sending'}>{state === 'sending' ? 'Sending…' : onSkip ? 'Save my feed' : 'Email me a sign-in link'}</button>
-      {onSkip && <button type="button" className="btn btn-ghost wide" onClick={onSkip}>Skip for now</button>}
-      <p className="note center">By continuing you agree to our <a href="/privacy" target="_blank" rel="noreferrer">privacy policy</a>.</p>
+      <button className="btn btn-dark wide" disabled={busy}>{busy ? 'Sending…' : submitLabel ?? 'Continue with email'}</button>
+      <p className="note center">Free. No password. By continuing you agree to our <a href="/privacy" target="_blank" rel="noreferrer">privacy policy</a>.</p>
+      {onSkip && <button type="button" className="btn btn-ghost wide" onClick={onSkip}>{skipLabel ?? 'Skip for now'}</button>}
     </form>
   );
 }

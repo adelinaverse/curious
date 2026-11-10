@@ -42,11 +42,29 @@ export async function requestSignIn(email: string, firstName: string, optIn: boo
     email: email.trim(),
     options: {
       emailRedirectTo: `${window.location.origin}/`,
-      data: { first_name: firstName.trim().slice(0, 60), marketing_opt_in: optIn },
+      // Progress rides along with the sign-up, so nothing is lost if the email opens in another browser.
+      data: { first_name: firstName.trim().slice(0, 60), marketing_opt_in: optIn, progress: localProgress() },
     },
   });
   if (!error) return { error: null };
   if (/rate limit/i.test(error.message)) return { error: 'Too many sign-in emails were sent just now. Please try again in a few minutes.' };
+  return { error: error.message };
+}
+
+function localProgress() {
+  try {
+    return JSON.parse(localStorage.getItem('curious-v1') ?? 'null');
+  } catch {
+    return null;
+  }
+}
+
+// Confirm the 6-digit code from the email without leaving the app.
+export async function verifyCode(email: string, code: string) {
+  if (!supabase) return { error: 'Sign-in is not available right now.' };
+  const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code.replace(/\s/g, ''), type: 'email' });
+  if (!error) return { error: null };
+  if (/expired|invalid/i.test(error.message)) return { error: "That code didn't work. Check it, or request a new one." };
   return { error: error.message };
 }
 
@@ -55,13 +73,17 @@ export function useAccount(p: Progress, setP: (fn: (p: Progress) => Progress) =>
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [justSignedIn, setJustSignedIn] = useState(false);
+  const [ready, setReady] = useState(false);
   const synced = useRef(false);
   const latest = useRef(p);
   latest.current = p;
 
   useEffect(() => {
     if (!supabase) return;
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setReady(true);
+    });
     const { data } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
       if (event === 'SIGNED_IN' && ARRIVED_FROM_LINK) setJustSignedIn(true);
@@ -106,6 +128,7 @@ export function useAccount(p: Progress, setP: (fn: (p: Progress) => Progress) =>
 
   return {
     signedIn: !!session,
+    ready,
     email: session?.user.email ?? null,
     profile,
     justSignedIn,

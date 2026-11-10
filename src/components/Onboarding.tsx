@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { themes, type ThemeId } from '../content';
 import { Wordmark, meshColours } from './bits';
 import { SignIn } from './SignIn';
@@ -11,9 +11,13 @@ const swatch = (id: string, hue: number) => {
   };
 };
 
-export function Onboarding({ onStart, onSignIn, signedIn }: { onStart: (picked: ThemeId[], sentTo?: string) => void; onSignIn: () => void; signedIn: boolean }) {
+export function Onboarding({ onStart, onSignIn, signedIn }: { onStart: (picked: ThemeId[]) => void; onSignIn: () => void; signedIn: boolean }) {
   const [step, setStep] = useState<'hello' | 'pick' | 'save'>('hello');
   const [picked, setPicked] = useState<ThemeId[]>([]);
+  // Signed in from the save step (code or link): head straight into the feed.
+  useEffect(() => {
+    if (signedIn && step === 'save') onStart(picked);
+  }, [signedIn]);
   const toggle = (id: ThemeId) => setPicked(p => (p.includes(id) ? p.filter(x => x !== id) : [...p, id]));
 
   if (step === 'hello') {
@@ -36,10 +40,11 @@ export function Onboarding({ onStart, onSignIn, signedIn }: { onStart: (picked: 
     return (
       <section className="save-step">
         <SignIn
-          title="Save your feed?"
-          reason="Your picks and every swipe tune this feed. Add your email and it follows you to any device."
-          onSent={email => onStart(picked, email)}
+          title="Create your free account"
+          reason="Your picks and every swipe tune this feed. Sign up free to keep it, with unlimited cards, every game, and your progress on any device."
+          submitLabel="Create my account"
           onSkip={() => onStart(picked)}
+          skipLabel="Try 8 cards first"
         />
       </section>
     );

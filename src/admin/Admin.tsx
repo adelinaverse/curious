@@ -12,7 +12,7 @@ interface Stats {
   totals: {
     visitors: number; visitors_today: number; visitors_7d: number; active_7d: number; returning: number;
     cards_seen: number; deeper: number; shares: number; quiz_right: number; quiz_total: number; waitlist: number;
-    signups?: number; signups_7d?: number; opted_in?: number;
+    signups?: number; signups_7d?: number; opted_in?: number; gated?: number; gated_converted?: number;
   };
   daily: { day: string; new_visitors: number; active: number }[];
   themes: { theme: string; picks: number }[];
@@ -147,6 +147,7 @@ function Dashboard({ email }: { email: string }) {
           <Tile label="Divination waitlist" value={fmt(t.waitlist)} />
           <Tile label="Sign-ups" value={fmt(t.signups ?? 0)} note={`${fmt(t.signups_7d ?? 0)} this week, ${pct(t.signups ?? 0, t.visitors)} of visitors`} />
           <Tile label="Opted in to emails" value={fmt(t.opted_in ?? 0)} note={pct(t.opted_in ?? 0, t.signups ?? 0) + ' of sign-ups'} />
+          <Tile label="Reached the sign-up wall" value={fmt(t.gated ?? 0)} note={`${pct(t.gated_converted ?? 0, t.gated ?? 0)} then signed up`} />
         </section>
 
         <section className="panel">

@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 
 // Anonymous usage tracking. Each browser gets a random id; no names or emails are collected.
-type EventType = 'start' | 'keep' | 'skip' | 'deeper' | 'learn' | 'quiz' | 'rom' | 'share' | 'session_end' | 'waitlist' | 'tune';
+type EventType = 'start' | 'keep' | 'skip' | 'deeper' | 'learn' | 'quiz' | 'rom' | 'share' | 'session_end' | 'waitlist' | 'tune' | 'gate';
 
 const KEY = 'curious-visitor';
 let memoryId: string | null = null;
