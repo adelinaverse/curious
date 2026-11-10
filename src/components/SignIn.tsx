@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { requestSignIn } from '../lib/account';
 
 // Sign-in and sign-up are the same form: new emails create an account, known ones just sign in.
-export function SignIn({ reason }: { reason?: string }) {
+export function SignIn({ reason, title, onSent, onSkip }: { reason?: string; title?: string; onSent?: (email: string) => void; onSkip?: () => void }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [optIn, setOptIn] = useState(false);
@@ -17,7 +17,8 @@ export function SignIn({ reason }: { reason?: string }) {
     if (error) {
       setError(error);
       setState('idle');
-    } else setState('sent');
+    } else if (onSent) onSent(email.trim());
+    else setState('sent');
   };
 
   if (state === 'sent') {
@@ -32,11 +33,11 @@ export function SignIn({ reason }: { reason?: string }) {
 
   return (
     <form className="signin" onSubmit={submit}>
-      <h2 className="sheet-title">Save your progress</h2>
+      <h2 className="sheet-title">{title ?? 'Save your progress'}</h2>
       <p className="signin-lead">{reason ?? 'Keep your rabbit holes, streak and tuned feed on any device.'} No password. We email you a link.</p>
       <label className="field">
         <span>First name</span>
-        <input value={name} onChange={e => setName(e.target.value)} autoComplete="given-name" maxLength={60} placeholder="Optional if you've signed up before" />
+        <input value={name} onChange={e => setName(e.target.value)} autoComplete="given-name" maxLength={60} />
       </label>
       <label className="field">
         <span>Email</span>
@@ -47,7 +48,8 @@ export function SignIn({ reason }: { reason?: string }) {
         <span>Send me the occasional email with new rabbit holes. Unsubscribe any time.</span>
       </label>
       {error && <p className="form-error" role="alert">{error}</p>}
-      <button className="btn btn-dark wide" disabled={state === 'sending'}>{state === 'sending' ? 'Sending…' : 'Email me a sign-in link'}</button>
+      <button className="btn btn-dark wide" disabled={state === 'sending'}>{state === 'sending' ? 'Sending…' : onSkip ? 'Save my feed' : 'Email me a sign-in link'}</button>
+      {onSkip && <button type="button" className="btn btn-ghost wide" onClick={onSkip}>Skip for now</button>}
       <p className="note center">By continuing you agree to our <a href="/privacy" target="_blank" rel="noreferrer">privacy policy</a>.</p>
     </form>
   );

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { themes, type ThemeId } from '../content';
 import { Wordmark, meshColours } from './bits';
+import { SignIn } from './SignIn';
 
 const swatch = (id: string, hue: number) => {
   const { base, blobs } = meshColours(id, hue);
@@ -10,8 +11,8 @@ const swatch = (id: string, hue: number) => {
   };
 };
 
-export function Onboarding({ onStart, onSignIn }: { onStart: (picked: ThemeId[]) => void; onSignIn: () => void }) {
-  const [step, setStep] = useState<'hello' | 'pick'>('hello');
+export function Onboarding({ onStart, onSignIn, signedIn }: { onStart: (picked: ThemeId[], sentTo?: string) => void; onSignIn: () => void; signedIn: boolean }) {
+  const [step, setStep] = useState<'hello' | 'pick' | 'save'>('hello');
   const [picked, setPicked] = useState<ThemeId[]>([]);
   const toggle = (id: ThemeId) => setPicked(p => (p.includes(id) ? p.filter(x => x !== id) : [...p, id]));
 
@@ -27,6 +28,19 @@ export function Onboarding({ onStart, onSignIn }: { onStart: (picked: ThemeId[])
           <button className="btn btn-light" onClick={() => setStep('pick')}>Start exploring</button>
           <button className="hello-signin" onClick={onSignIn}>I already have an account</button>
         </div>
+      </section>
+    );
+  }
+
+  if (step === 'save') {
+    return (
+      <section className="save-step">
+        <SignIn
+          title="Save your feed?"
+          reason="Your picks and every swipe tune this feed. Add your email and it follows you to any device."
+          onSent={email => onStart(picked, email)}
+          onSkip={() => onStart(picked)}
+        />
       </section>
     );
   }
@@ -52,7 +66,7 @@ export function Onboarding({ onStart, onSignIn }: { onStart: (picked: ThemeId[])
           );
         })}
       </ul>
-      <button className="btn btn-dark pick-go" disabled={picked.length < 2} onClick={() => onStart(picked)}>
+      <button className="btn btn-dark pick-go" disabled={picked.length < 2} onClick={() => (signedIn ? onStart(picked) : setStep('save'))}>
         {picked.length < 2 ? `Pick ${2 - picked.length} more` : 'Build my feed'}
       </button>
     </section>

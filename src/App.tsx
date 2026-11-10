@@ -14,6 +14,11 @@ import { useAccount } from './lib/account';
 import { LINK_ERROR } from './lib/supabase';
 
 type Tab = 'feed' | 'play' | 'you';
+
+// Remember that we've already asked once after a rabbit hole, so we never nag.
+const PROMPT_KEY = 'curious-save-prompted';
+const savePrompted = () => { try { return localStorage.getItem(PROMPT_KEY) === '1'; } catch { return true; } };
+const markSavePrompted = () => { try { localStorage.setItem(PROMPT_KEY, '1'); } catch { /* ignore */ } };
 type Overlay = null | { kind: 'thread' | 'why' | 'share'; id: string } | { kind: 'truth' } | { kind: 'signin'; reason?: string };
 
 export default function App() {
@@ -81,10 +86,15 @@ export default function App() {
     return (
       <Shell>
         <Onboarding
-          onStart={picked => {
+          onStart={(picked, sentTo) => {
             store.start(picked);
+            if (sentTo) {
+              markSavePrompted();
+              setNotice(`Check ${sentTo} for your sign-in link. Your feed is ready meanwhile.`);
+            }
             if (linked) setOverlay({ kind: 'thread', id: linked });
           }}
+          signedIn={account.signedIn}
           onSignIn={() => openSignIn('Welcome back. Enter your email and we will send you a link to pick up where you left off.')}
         />
         {accountLayer}
@@ -152,6 +162,10 @@ export default function App() {
           onClose={() => {
             setOverlay(null);
             if (current?.id === overlay.id) advance();
+            if (!account.signedIn && !savePrompted()) {
+              markSavePrompted();
+              window.setTimeout(() => openSignIn('Nice rabbit hole. Save it, along with your streak and tuned feed, so it is here next time.'), 350);
+            }
           }}
           onLearned={n => store.learned(byId(overlay.id), n)}
           onQuizzed={(r, t) => store.quizzed(r, t, byId(overlay.id).theme, 'quiz', overlay.id)}
